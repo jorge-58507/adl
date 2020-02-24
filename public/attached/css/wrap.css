@@ -1,0 +1,90 @@
+.bg_adl {
+  background: #7182d5;
+  color: #fff !important;
+}
+.bg_adl>a{
+  color: antiquewhite;;
+}
+.padding_btn_nolabel {
+  padding-top: 31.5px;
+}
+.main_bg_statistic {
+  background-image: url("../../attached/image/statistics2.png");
+  /* height: 100vh; */
+  background-repeat: repeat;
+  background-size: 100%;
+}
+.dropdown-item.social {
+  display: inline-flex; 
+  width: 30%;
+  padding: .25rem 1.5rem;
+}
+
+
+#form_new_data{
+  margin: 10px auto;
+  width: 70%;
+  min-width: 300px;
+}
+.input_invalid {
+  background-color: #ffaaaabd;
+}
+.input_valid {
+  background-color: #a3f996d4;
+}
+.input_neutral {
+  background-color: #ffffff;
+}
+.tab {
+  min-height: 300px;
+  display: none;
+}
+/* Make circles that indicate the steps of the form: */
+.step {
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+
+/* Mark the active step: */
+.step.active {
+  opacity: 1;
+}
+
+/* Mark the steps that are finished and valid: */
+.step.finish {
+  background-color: #4CAF50;
+}
+
+.h_40 {
+  height: 40px;
+}
+.h_400 {
+  height: 400px;
+}
+.h_500 {
+  height: 500px;
+}
+.h_600 {
+  height: 600px;
+}
+.h_700 {
+  height: 700px;
+}
+.h_100vh{
+  height: 100vh;
+}
+
+html, body {height: 100%}
+.h_100p{
+  height: 100%;
+}
+
+.overflow_auto{
+  overflow: auto;
+}

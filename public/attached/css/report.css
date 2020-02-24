@@ -1,0 +1,37 @@
+#side_panel{
+  width: 200px;
+  height: 100vh;
+  position: fixed;
+  top:0;
+  left:0;
+  background: #7182d5;
+  font-weight: bolder;
+  border-right: solid 1px #5063bd
+}
+#side_panel>div>a{
+  color: #ffffff !important;
+}
+#body_panel{
+  margin-left: 220px;
+}
+.far {
+  font-size: small;
+}
+.div_total .thumbnail {
+  font-size: 28pt;
+  padding: 0px 5px;
+  color: #6373bf;
+}
+.side_panel_logo_container{
+  background:#fff;
+  border-radius: 10px;
+  padding: 5px 0;
+}
+ .side_panel_item{
+   font-size: 13pt;
+   color: #FFFFFF;
+   font-weight: normal;
+ }
+ .side_panel_item:hover{
+   color: #ffffff;
+ }
