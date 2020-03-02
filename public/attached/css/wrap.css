@@ -88,3 +88,6 @@ html, body {height: 100%}
 .overflow_auto{
   overflow: auto;
 }
+.bg_disabled{
+  background-color: #e9ecef;
+}

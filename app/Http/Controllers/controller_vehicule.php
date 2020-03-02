@@ -18,17 +18,10 @@ class controller_vehicule extends Controller
     {
         $model_company = new adl_company;
         $model_vehicule = new adl_vehicule;
+        $controller_company = new controller_company;
 
-        $rs_company = $model_company->select('ai_company_id')
-        ->join('adl_user_companies', 'adl_companies.ai_company_id', '=', 'adl_user_companies.user_ai_company_id')
-        ->join('users', 'adl_user_companies.company_ai_user_id', '=', 'users.id')
-        ->where('users.id',$user_id)
-        ->get();
-        $array_company_id=[];
-        foreach ($rs_company as $a => $company_id) {
-            array_push($array_company_id,$company_id['ai_company_id']);
-        }
-        $qry_vehicule = $model_vehicule->whereIn('vehicule_ai_company_id',$array_company_id);
+        $array_company_id = $controller_company->get_company_by_user($user_id);
+        $qry_vehicule = $model_vehicule->whereIn('vehicule_ai_company_id',$array_company_id['array_company']);
         $rs_vehicule = $qry_vehicule->get();
         return $rs_vehicule;
  

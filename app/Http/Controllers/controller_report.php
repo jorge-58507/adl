@@ -18,6 +18,7 @@ class controller_report extends Controller
      */
     public function index(Request $request)
     {
+        $request->user()->authorizeRole(['user','admin']);
         $model_option = new adl_option;
         $model_vehicule = new adl_vehicule;
         $controller_vehicule = new controller_vehicule;

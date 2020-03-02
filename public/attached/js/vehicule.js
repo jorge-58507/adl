@@ -42,9 +42,7 @@ class vehicule
     }
     cls_general_funct.async_laravel_request(url, method, funcion, body)
   }
-  render_select(array_data,target)  {
-    console.log(array_data);
-    
+  render_select(array_data,target)  {    
     var selector = `
       <label for="sel_vehicule">Veh&iacute;culo</label>
       <select class="form-control" name = "sel_vehicule" id = "sel_vehicule" >`;
@@ -55,4 +53,30 @@ class vehicule
     document.getElementById(target).innerHTML = selector;
   }
 
+  // CONFIGURACIÓN
+
+  render_vehicule_list(array_vehicule,array_head,caption=''){
+    
+    var field_list = [];
+    var content_head
+    for (const a in array_head) {
+        content_head += `<th>${a}</th>`;
+        field_list.push(array_head[a]);
+      }
+    var content = `<table class="table table-condensed table-bordered table-striped"><thead><tr>${content_head}</tr></thead><tbody>`;
+    var content_body = '';
+      for (const a in array_vehicule) {
+        var row_body = '';
+        for (let b = 0; b < field_list.length; b++) {
+          row_body += `
+          <td>${array_vehicule[a][field_list[b]]}</td>
+          `;
+        }
+        content_body += `<tr>${row_body}</tr>`;
+      }
+      content += `${content_body}</tbody></table>`;
+      document.getElementById("container_vehicule_filtered").innerHTML = content;
+
+      // FALTA EL FOOT Y EL CAPTION
+  }
 }

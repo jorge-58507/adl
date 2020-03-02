@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Middleware;
-
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class mw_checklogin
 {
@@ -15,9 +15,13 @@ class mw_checklogin
      */
     public function handle($request, Closure $next)
     {
-        // if (!$request->user()) {
+        $user = $request->user();
         if (!$request->user() || date('Y') > '2020') {
-             return redirect('/');
+            return redirect('/login');
+        }
+        elseif ($user['status'] === 0) {
+            Auth::logout();
+            return redirect('/login');
         }
         return $next($request);
     }

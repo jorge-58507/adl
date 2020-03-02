@@ -64,12 +64,12 @@ class general_funct {
     return valid;
   }
   // ###############3   VERIFICAR VACIOS
-  isEmpty(field) {
+  isEmpty(field,set_invalid=true) {
     if (field.value.length === 0 || /^\s+$/.test(field.value)) {
-      field.className += " invalid";
+      if (set_invalid) {  field.className += " invalid";  }
       return 0;  //Vacio
     } else {
-      field.classList.remove('invalid');
+      if (set_invalid) { field.classList.remove('invalid'); }
       return 1;  //Lleno
     }
   } 
@@ -203,22 +203,25 @@ class general_funct {
     pptx.save('Reporte de Eficiencia ' + name);
 
   }
-  validFranz(selector, raw_acept, alt = '') { // acept es un array
+  validFranz(selector, raw_acept, alt = '') { // raw_acept es un array
   // var raw_acept = acept.split(' '); // Allowed separated by spaces
-  var characters = '';
-  for (var i in raw_acept) {
-    switch (raw_acept[i]) {
-      case 'number': characters += '0123456789'; break;
-      case 'simbol': characters += '¡!¿?@&%$"#º\''; break;
-      case 'punctuation': characters += ',.:;'; break;
-      case 'mathematic': characters += '+-*/='; break;
-      case 'close': characters += '[]{}()<>'; break;
-      case 'word': characters += ' abcdefghijklmnñopqrstuvwxyzáéíóú'; break;
+    var characters = '';
+    for (var i in raw_acept) {
+      switch (raw_acept[i]) {
+        case 'number': characters += '0123456789'; break;
+        case 'simbol': characters += '¡!¿?@&%$"#º\''; break;
+        case 'punctuation': characters += ',.:;'; break;
+        case 'mathematic': characters += '+-*/='; break;
+        case 'close': characters += '[]{}()<>'; break;
+        case 'word': characters += ' abcdefghijklmnñopqrstuvwxyzáéíóú'; break;
+      }
     }
+    $("#" + selector).validCampoFranz(characters + alt);
   }
-  $("#" + selector).validCampoFranz(characters + alt);
-}
-  
+  isEmail(email) {
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return regex.test(email);
+  }
 }
 //   #######################     GENERALES
 

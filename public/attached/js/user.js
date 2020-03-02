@@ -2,6 +2,30 @@
 // ##########    CLASS COMPANY
 class class_company 
 {
+  render_company_saved(company_list, limit = 20, label_filter = ''){
+    var counter = 1;
+    var content = '';
+    for (const a in company_list) {
+      if (counter > limit) { break; }
+      var bg = (company_list[a]['int_company_status'] === 0) ? 'bg_disabled' : 'bg-white';
+      var block_icon = (company_list[a]['int_company_status'] === 0) ? 'check' : 'trash-alt';
+      content += `
+        <div class="list-group-item d-flex justify-content-between align-items-center ${bg} ">${parseInt(a) + 1}- ${company_list[a]['tx_company_description']} RUC ${company_list[a]['tx_company_ruc']}
+          <div>
+            <button type="button" onclick="cls_company.edit_company(${company_list[a]['ai_company_id']},'${company_list[a]['tx_company_description']}','${company_list[a]['tx_company_ruc']}','${company_list[a]['tx_company_telephone']}','${company_list[a]['tx_company_direction']}')" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_editcompany"><i class="fas fa-wrench"></i></button>
+            &nbsp;&nbsp;
+            <button type="button" onclick="cls_company.block_company(${company_list[a]['ai_company_id']})" class="btn btn-sm btn-warning"><i class="fas fa-${block_icon}"></i></button>
+          </div>
+        </div>
+      `;
+      counter++;
+    }
+    $("#container_company_saved").fadeOut('fast', ()=>{
+      document.getElementById("container_company_saved").innerHTML = content;
+      document.getElementById("container_label_filtercompany").innerHTML = label_filter;
+    });
+    $("#container_company_saved").fadeIn();
+  }
   validate_form(array_form) {
     var valid = true;
     for (let a = 0; a < array_form.length; a++) {
@@ -46,62 +70,121 @@ class class_company
     document.getElementById('txt_company_ruc').value = '';
     document.getElementById('txt_company_direction').value = '';
     document.getElementById('txt_company_telephone').value = '';
+
+    document.getElementById('txt_editcompany_selected').value = '';
+    document.getElementById('txt_editcompany_description').value = '';
+    document.getElementById('txt_editcompany_ruc').value = '';
+    document.getElementById('txt_editcompany_direction').value = '';
+    document.getElementById('txt_editcompany_telephone').value = '';
   }
-  reorder_list(obj) {
-    var raw_ordered = []; var raw_returned = new Object;
-    for (var a in obj) { raw_ordered.push(obj[a] + '*-*' + a); }
-    raw_ordered.sort();
-    for (var i = 0; i < raw_ordered.length; i++) {
-      var splited = raw_ordered[i].split("*-*");
-      raw_returned["'" + splited[1] + "'"] = splited[0];
+  edit_company(company_id, description, ruc, telephone, direction){
+    document.getElementById('txt_editcompany_selected').value = company_id;
+    document.getElementById('txt_editcompany_description').setAttribute('placeholder', description);
+    document.getElementById('txt_editcompany_ruc').setAttribute('placeholder',ruc);
+    document.getElementById('txt_editcompany_telephone').setAttribute('placeholder',telephone);
+    document.getElementById('txt_editcompany_direction').setAttribute('placeholder',direction);
+  }
+
+  update_company(){
+    var company_id = document.getElementById('txt_editcompany_selected').value;
+    var description = document.getElementById('txt_editcompany_description');
+    description = (cls_general_funct.is_empty_var(description.value) === 0) ? description.getAttribute('placeholder') : description.value;
+    var ruc = document.getElementById('txt_editcompany_ruc');
+    ruc = (cls_general_funct.is_empty_var(ruc.value) === 0) ? ruc.getAttribute('placeholder') : ruc.value;
+    var telephone = document.getElementById('txt_editcompany_telephone');
+    telephone = (cls_general_funct.is_empty_var(telephone.value) === 0) ? telephone.getAttribute('placeholder') : telephone.value;
+    var direction = document.getElementById('txt_editcompany_direction');
+    direction = (cls_general_funct.is_empty_var(direction.value) === 0) ? direction.getAttribute('placeholder') : direction.value;
+
+    var url = 'company/whyouseethis';
+    var method = 'PUT';
+    var body = JSON.stringify({ a: company_id, b: description, c: ruc, d: telephone, e: direction });
+    var funcion = function (data_obj) {
+      $('#modal_editcompany').modal('hide')
+      cls_company.render_company_saved(data_obj['company_list']);
+      cls_company.clear_form();
+      cls_general_funct.shot_toast(data_obj['message']);
     }
-    return raw_returned
+    cls_general_funct.async_laravel_request(url, method, funcion, body)
   }
-  filter_company_linkup(str, limit = 300) {
-    var haystack = array_companylist;
-    var needles = str.split(' ');
-    var raw_filtered = new Object;
-    var counter = 0;
-    for (var i in haystack) {
-      var ocurrencys = 0;
-      for (const a in needles) {
-        if (haystack[i].toLowerCase().indexOf(needles[a].toLowerCase()) > -1) { ocurrencys++ }
-      }
-      if (ocurrencys === needles.length && counter < limit) {
-        raw_filtered[i] = haystack[i];
-        counter++;
-      }
+  block_company(company_id){
+    var url = 'company/' + company_id;
+    var method = 'DELETE';
+    var funcion = function (data_obj) {
+      var limit = 20;
+      var label = `Mostrando`;
+      label += (data_obj['company_count'] > limit) ? ` ${limit} de ${data_obj['company_count']}.` : ` ${data_obj['company_count']} de ${data_obj['company_count']}.`;
+      cls_company.render_company_saved(data_obj['company_list'], limit, label);
+      cls_general_funct.shot_toast(data_obj['message']);
     }
-    this.render_company_linkup(this.reorder_list(raw_filtered));
+    cls_general_funct.async_laravel_request(url, method, funcion)
   }
-  render_company_linkup(data_list) {
-    content = '';
-    for (const a in data_list) {
-      content += `
-      <button type="button" class="list-group-item list-group-item-action">${data_list[a]}</button>
-      `;
-    }
-    document.getElementById("container_data_filtered").innerHTML = content;
-  }
+
+
+  // reorder_list(obj) {
+  //   var raw_ordered = []; var raw_returned = new Object;
+  //   for (var a in obj) { raw_ordered.push(obj[a] + '*-*' + a); }
+  //   raw_ordered.sort();
+  //   for (var i = 0; i < raw_ordered.length; i++) {
+  //     var splited = raw_ordered[i].split("*-*");
+  //     raw_returned["'" + splited[1] + "'"] = splited[0];
+  //   }
+  //   return raw_returned
+  // }
+  // filter_company_linkup(str, limit = 300) {
+  //   var haystack = array_companylist;
+  //   var needles = str.split(' ');
+  //   var raw_filtered = new Object;
+  //   var counter = 0;
+  //   for (var i in haystack) {
+  //     var ocurrencys = 0;
+  //     for (const a in needles) {
+  //       if (haystack[i].toLowerCase().indexOf(needles[a].toLowerCase()) > -1) { ocurrencys++ }
+  //     }
+  //     if (ocurrencys === needles.length && counter < limit) {
+  //       raw_filtered[i] = haystack[i];
+  //       counter++;
+  //     }
+  //   }
+  //   this.render_company_linkup(this.reorder_list(raw_filtered));
+  // }
+  // render_company_linkup(data_list) {
+  //   content = '';
+  //   for (const a in data_list) {
+  //     content += `
+  //     <button type="button" class="list-group-item list-group-item-action">${data_list[a]}</button>
+  //     `;
+  //   }
+  //   document.getElementById("container_data_filtered").innerHTML = content;
+  // }
 
 }
 // ##################    CLASS USER     #############
 class class_user
 {
-  render_user_saved(user_list){
+  render_user_saved(user_list, limit=20, label_filter=''){
+    var counter = 1;
     var content = '';
     for (const a in user_list) {
+      if (counter > limit) { break; }
+      var bg = (user_list[a]['status'] === 0) ? 'bg_disabled' : 'bg-white';
+      var block_icon = (user_list[a]['status'] === 0) ? 'check' : 'trash-alt';
       content += `
-        <div class="list-group-item d-flex justify-content-between align-items-center">${user_list[a]['name']}
+        <div class="list-group-item d-flex justify-content-between align-items-center ${bg} ">${parseInt(a)+1}- ${user_list[a]['name']}
           <div>
             <button type="button" onclick="cls_user.edit_user(${user_list[a]['id']},'${user_list[a]['name']}','${user_list[a]['email']}')" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modal_edituser"><i class="fas fa-wrench"></i></button>
             &nbsp;&nbsp;
-            <button type="button" onclick="cls_user.block_user(${user_list[a]['id']})" class="btn btn-sm btn-warning"><i class="fas fa-trash-alt"></i></button>
+            <button type="button" onclick="cls_user.block_user(${user_list[a]['id']})" class="btn btn-sm btn-warning"><i class="fas fa-${block_icon}"></i></button>
           </div>
         </div>
       `;
+      counter++;
     }
-    document.getElementById("container_user_saved").innerHTML = content;
+    $("#container_user_saved").fadeOut('fast', ()=>{
+      document.getElementById("container_user_saved").innerHTML = content;
+      document.getElementById("container_label_filteruser").innerHTML = label_filter;
+    });
+    $("#container_user_saved").fadeIn();
   }
   validate_form(array_form) {  // array_form es un array de selectores (inputs)
     var valid = true;
@@ -126,17 +209,14 @@ class class_user
     ];
     var valid = this.validate_form(array_form);
     if (!valid) { cls_general_funct.shot_toast("Verifique los Datos."); return false; }
-
-// VERIFICAR EL FORMATO DE EMAIL PRIMERO
-
-    
-
+    var val_email = cls_general_funct.isEmail(array_form[1].value);
+    if (!val_email) { cls_general_funct.shot_toast("Correo Incorrecto."); return false; }    
     var url = 'user';
     var method = 'POST';
     var body = JSON.stringify({ a: document.getElementById("sel_user_company").value, b: array_form[0].value, c: array_form[1].value, d: array_form[2].value, e: array_form[4].value });
     var funcion = function (data_obj) {
-      // cls_company.render_select_company(data_obj['data']['company_list']);
-      cls_company.clear_form();
+      cls_user.render_user_saved(data_obj['data']['user_list']);
+      cls_user.clear_form();
       cls_general_funct.shot_toast(data_obj['message']);
     }
     cls_general_funct.async_laravel_request(url, method, funcion, body)
@@ -147,6 +227,10 @@ class class_user
     document.getElementById('txt_user_email').value = '';
     document.getElementById('txt_user_password').value = '';
     document.getElementById('txt_user_passwordconfirm').value = '';
+
+    document.getElementById('txt_edituser_selected').value = '';
+    document.getElementById('txt_edituser_name').value = '';
+    document.getElementById('txt_edituser_email').value = '';
   }
   edit_user(user_id,name,email){
     document.getElementById('txt_edituser_selected').value = user_id;
@@ -154,29 +238,38 @@ class class_user
     document.getElementById('txt_edituser_email').setAttribute('placeholder', email);
   }
   update_user(){
-    var user_id = document.getElementById('txt_edituser_selected');
+    var user_id = document.getElementById('txt_edituser_selected').value;
     var name = document.getElementById('txt_edituser_name');
+    name = (cls_general_funct.is_empty_var(name.value) === 0) ? name.getAttribute('placeholder') : name.value;
     var email = document.getElementById('txt_edituser_email');
-    var password = document.getElementById('txt_edituser_password');
-    var passwordconfirm = document.getElementById('txt_edituser_passwordconfirm');
-    // const array_form = [
-    //   document.getElementById('txt_edituser_selected'),
-    //   document.getElementById('txt_edituser_name'),
-    //   document.getElementById('txt_edituser_email'),
-    //   document.getElementById('txt_edituser_password'),
-    //   document.getElementById('txt_edituser_passwordconfirm')
-    // ];
-    // var answer = this.validate_form(array_form);
-    var answer = this.validate_form([user_id,name,email,password,passwordconfirm]);
-    if (answer === false) { cls_general_funct.shot_toast('Faltan Campos por llenar'); return false; }
-    if (password.value != passwordconfirm.value) {  cls_general_funct.shot_toast('Las Contraseñas no Coinciden'); return false; }
+    email = (cls_general_funct.is_empty_var(email.value) === 0) ? email.getAttribute('placeholder') : email.value;
+    var password = document.getElementById('txt_edituser_password').value;
+    var passwordconfirm = document.getElementById('txt_edituser_passwordconfirm').value;
+    var val_email = cls_general_funct.isEmail(email);
+    if (!val_email) { cls_general_funct.shot_toast("Correo Incorrecto."); return false; }    
+    if (password != passwordconfirm) {  cls_general_funct.shot_toast('Las Contraseñas no Coinciden'); return false; }
     var url = 'user/whyouseethis';
-    var method = 'POST';
-    var body = JSON.stringify({ a: user_id.value, b: name.value, c: email.value });
+    var method = 'PUT';
+    var body = JSON.stringify({ a: user_id, b: name, c: email, d: password });
     var funcion = function (data_obj) {
+      $('#modal_edituser').modal('hide')
+      cls_user.render_user_saved(data_obj['user_list']);
+      cls_user.clear_form();
       cls_general_funct.shot_toast(data_obj['message']);
     }
     cls_general_funct.async_laravel_request(url, method, funcion, body)
+  }
+  block_user(user_id){
+    var url = 'user/'+user_id;
+    var method = 'DELETE';
+    var funcion = function (data_obj) {
+      var limit = 20;
+      var label = `Mostrando`;
+      label += (data_obj['user_count'] > limit) ? ` ${limit} de ${data_obj['user_count']}.` : ` ${data_obj['user_count']} de ${data_obj['user_count']}.`;
+      cls_user.render_user_saved(data_obj['user_list'],limit,label);
+      cls_general_funct.shot_toast(data_obj['message']);
+    }
+    cls_general_funct.async_laravel_request(url, method, funcion)
   }
 }
 
