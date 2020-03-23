@@ -36,21 +36,21 @@
 								<a class="nav-link text-white" href="{{ route('login') }}">{{ __('Login') }}</a>
 						</li>
 					@else
-						<li><a class="nav-item nav-link text-white" href="/report">Reportes</a></li>
+						<li><a class="nav-item nav-link text-white" href="{{URL::asset('/report')}}">Reportes</a></li>
 						<li><a class="nav-item nav-link text-white" href="{{ route('home') }} ">Combustible</a></li>
 						@if ( auth()->user()->checkRole('admin'))
 							<li class="nav-item">
-									<a class="nav-link text-white" href="/register">{{ __('Registrar') }}</a>
+									<a class="nav-link text-white" href="{{URL::asset('/register')}}">{{ __('Registrar') }}</a>
 							</li>
 						@endif
 						<li class="nav-item dropdown">
 							<a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }}</a>
 							<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-								<a class="dropdown-item social" href="https://alldatalogistic.com/Multisense/"><i class="fab fa-facebook-f"></i></a>
+								<a class="dropdown-item social" href='https://www.tiktok.com/@alldatalogistic_1?lang=es'><i class="fas fa-video"></i></a>
 								<a class="dropdown-item social" href="https://twitter.com/alldatalogistic/"><i class="fab fa-twitter"></i></a>
 								<a class="dropdown-item social" href="https://instagram.com/alldatalogistic/"><i class="fab fa-instagram"></i></a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="/user/edit/edit"><i class="fas fa-wrench"> </i> {{ __(' Opciones') }}</a>
+								<a class="dropdown-item" href="{{ URL::asset('/user/edit/edit')}}"><i class="fas fa-wrench"> </i> {{ __(' Opciones') }}</a>
 								<a class="dropdown-item" href="{{ route('logout') }}"
 								onclick="event.preventDefault();
 																			document.getElementById('logout-form').submit();"><i class="fas fa-door-open"> </i>

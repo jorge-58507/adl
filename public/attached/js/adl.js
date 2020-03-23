@@ -120,7 +120,7 @@ class general_funct {
     if (json_obj) { funcion(json_obj); }
   }
 
-  shot_toast(message) {
+  shot_toast(message,opt={}) {
     document.getElementById("toast_container").innerHTML = `
       <div id="toast_message" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header bg-dark">
@@ -129,12 +129,15 @@ class general_funct {
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="toast-body" id="toast_message_body bg-danger">
+        <div class="toast-body overflow_auto h_400" id="toast_message_body bg-danger">
           ${message}
         </div>
       </div>
     `;
     var option = { "delay": 3000 };
+    for (const a in opt) {
+      option[a] = opt[a];
+    }    
     $('.toast').toast(option);
     $('#toast_message').toast('show');
   }

@@ -49,7 +49,7 @@ class controller_user extends Controller
         $model_user_company = new adl_user_company;
         $rs_user_company = $model_user_company->get();
         $model_vehicule = new adl_vehicule;
-        $rs_vehicule = $model_vehicule->select('adl_companies.tx_company_description','adl_vehicules.tx_vehicule_slug','adl_vehicules.tx_vehicule_licenseplate','adl_vehicules.tx_vehicule_brand','adl_vehicules.tx_vehicule_model')
+        $rs_vehicule = $model_vehicule->select('adl_vehicules.vehicule_ai_company_id','adl_companies.tx_company_description','adl_vehicules.tx_vehicule_slug','adl_vehicules.tx_vehicule_licenseplate','adl_vehicules.tx_vehicule_brand','adl_vehicules.tx_vehicule_model','adl_vehicules.int_vehicule_status')
         ->join('adl_companies','adl_companies.ai_company_id','=','adl_vehicules.vehicule_ai_company_id')
         ->limit(20)->get();
 

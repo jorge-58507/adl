@@ -13,6 +13,49 @@
 @endphp
 <div class="container">
 	<div id="toast_container" style="position: fixed; top: 130px; right: 100px; z-index: 10"></div>
+	<!-- Modal NEW VEHICULE	 -->
+	<div class="modal fade" id="modal_new_vehicule" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Agregar Veh&iacute;culo</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-12 col-md-6">
+							<label for="txt_licenseplate">Matricula Vehicular</label>
+							<input type="text" id="txt_vehicule_licenseplate" class="form-control" placeholder="" value="">
+						</div>
+						<div class="col-sm-12 col-md-6">
+							<label for="txt_licenseplate">Compa&ntilde;&iacute;a</label>
+							<select name="sel_company" id="sel_company" class="form-control">
+								<?php foreach ($companylist as $key => $company) {	?>
+									<option value="{{$key}}">{{$company}}</option>
+								<?php	}	?>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12 col-md-6">
+							<label for="txt_brand">Marca</label>
+							<input type="text" id="txt_vehicule_brand" class="form-control" placeholder="" value="">
+						</div>
+						<div class="col-sm-12 col-md-6">
+							<label for="txt_model">Modelo</label>
+							<input type="text" id="txt_vehicule_model" class="form-control" placeholder="" value="">
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+					<button type="button" class="btn btn-primary" id="btn_save_vehicule"><i class="fa fa-save"></i> Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>
   <!-- Modal EDIT USER-->
 	<div class="modal fade" id="modal_edituser" tabindex="-1" role="dialog" aria-labelledby="efficiency" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
@@ -95,14 +138,55 @@
 		</div>
 	</div>
 	<!-- Modal -->   
+  <!-- Modal EDIT VEHICULE-->
+	<div class="modal fade" id="modal_editvehicule" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Modifique la informaci&oacute;n</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-12">
+							<input type="hidden" id="txt_editvehicule_selected" class="form-control">
+						</div>
+						<div class="col-sm-12">
+							<label for="txt_editvehicule_brand">Marca</label>
+							<input type="text" id="txt_editvehicule_brand" class="form-control" placeholder="">
+						</div>
+						<div class="col-sm-12">
+							<label for="txt_editvehicule_model">Modelo</label>
+							<input type="text" id="txt_editvehicule_model" class="form-control" placeholder="">
+						</div>
+						<div class="col-sm-12">
+							<label for="sel_editvehicule_company">Compa&ntilde;&iacute;a</label>
+							<select class="form-control" name="sel_editvehicule_company" id="sel_editvehicule_company">
+<?php						foreach ($compacted['company_list'] as $a => $company) { ?>
+									<option value="{{ $company['ai_company_id'] }}">{{ $company['tx_company_description'] }}</option>
+<?php						}			?>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+					<button type="button" class="btn btn-primary" id="btn_upd_vehicule"><i class="fas fa-save"></i> Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal --> 
 	<ul class="nav nav-tabs" id="myTab" role="tablist" style="justify-content: center; border: none;">
 		<li class="nav-item bg-light">
-			<a class="nav-link active" id="user-tab" data-toggle="tab" href="#user_profile" role="tab" aria-controls="user-tab"
-					aria-selected="true">Usuario</a>
+			<a class="nav-link active" id="company-tab" data-toggle="tab" href="#company" role="tab" aria-controls="company-tab"
+					aria-selected="false">Compa&ntilde;&iacute;a</a>
 		</li>
 		<li class="nav-item bg-light">
-			<a class="nav-link" id="company-tab" data-toggle="tab" href="#company" role="tab" aria-controls="company-tab"
-					aria-selected="false">Compa&ntilde;&iacute;a</a>
+			<a class="nav-link" id="user-tab" data-toggle="tab" href="#user_profile" role="tab" aria-controls="user-tab"
+					aria-selected="true">Usuario</a>
 		</li>
 		<li class="nav-item bg-light">
 			<a class="nav-link" id="linkup-tab" data-toggle="tab" href="#linkup" role="tab" aria-controls="link-tab"
@@ -156,7 +240,7 @@
 								</div>
 
 								<div class="form-group row">
-									<label for="sel_user_role" class="col-md-4 col-form-label text-md-right">{{ __('Compañía') }}</label>
+									<label for="sel_user_role" class="col-md-4 col-form-label text-md-right">{{ __('Rol de Usuario') }}</label>
 
 									<div class="col-md-6">
 										<select name="sel_user_role" id="sel_user_role" class="form-control">
@@ -219,7 +303,7 @@
 {{-- ^^ LISTADO DE USUARIOS ^^ --}}
 			</div>
 		</div>  
-		<div class="tab-pane fade show" id="company" role="tabpanel" aria-labelledby="company-tab">
+		<div class="tab-pane fade show active" id="company" role="tabpanel" aria-labelledby="company-tab">
 			<div class="row justify-content-center">
 				<div class="col-md-8">
 					<div class="card">
@@ -334,7 +418,7 @@
 			</div>
 		</div>
 
-		<div class="tab-pane fade show active" id="tab_vehicule" role="tabpanel" aria-labelledby="vehicule-tab">
+		<div class="tab-pane fade show" id="tab_vehicule" role="tabpanel" aria-labelledby="vehicule-tab">
 			<div class="row justify-content-center bg-white h_500 pt-3 overflow_auto">
 				<div class="col-sm-12">
 					<div class="row">
@@ -357,10 +441,14 @@
 								<option value="200">Mostrar 200</option>
 							</select>
 						</div>
+						<div class="col-sm-2 col-md-3">
+							<button type="button" class="btn btn-success" id="btn_add_vehicule" data-toggle="modal" data-target="#modal_new_vehicule"><i class="fa fa-plus"></i> Agregar Vehiculo</button>
+						</div>
+
 						<div class="col-sm-12" id="label_vehiculefilter">&nbsp;</div>
 					</div>
 					<div class="row">
-						<div class="col-md-6 list-group" id="container_vehicule_filtered">ddd</div>
+						<div class="col-md-12" id="container_vehicule_filtered"></div>
 					</div>
 				</div>
 			</div>
@@ -446,6 +534,7 @@
 	$("#btn_upd_company").on("click", ()=>{
 		cls_company.update_company();
 	})
+	
 	// ###################   VEHICULE
 
 	var array_head ={
@@ -454,6 +543,27 @@
 		'Marca':'tx_vehicule_brand',
 		'Modelo':'tx_vehicule_model'
 	}
-	cls_vehicule.render_vehicule_list(JSON.parse('<?php echo json_encode($compacted['vehicule_list']); ?>'),array_head)
+	cls_vehicule.render_vehicule_list(JSON.parse('<?php echo json_encode($compacted['vehicule_list']); ?>'),array_head);
+	$("#txt_vehicule_filter").on('keypress', function(event){
+		if (event.which === 13) {	$("#btn_vehicule_filter").click();	}
+	})
+	$("#btn_upd_vehicule").on("click", ()=>{
+		cls_vehicule.update_vehicule();
+	})
+	$("#btn_vehicule_filter").on('click', ()=>{
+		cls_vehicule.filter_vehicule();
+	})
+	$("#btn_save_vehicule").on("click", function(){
+		var licenseplate = document.getElementById('txt_vehicule_licenseplate').value;
+		var company = document.getElementById('sel_company').value;
+		var brand = document.getElementById('txt_vehicule_brand').value;
+		var model = document.getElementById('txt_vehicule_model').value;
+		cls_vehicule.save_vehicule('table','container_vehicule',licenseplate,brand,model,company);
+		cls_general_funct.set_empty(document.getElementById('txt_vehicule_licenseplate'));
+		cls_general_funct.set_empty(document.getElementById('txt_vehicule_brand'));
+		cls_general_funct.set_empty(document.getElementById('txt_vehicule_model'));
+	});
+
+
 </script>		
 @endsection

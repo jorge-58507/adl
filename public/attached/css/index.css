@@ -3,3 +3,16 @@
   overflow: auto;
   min-height: 500px;
 }
+#upload_file{
+  border: 2px dashed #bbb;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 25px;
+  text-align: center;
+  color:#bbb;
+}
+#container_uploadfile{
+  border: solid 1px #ccc;
+  padding: 10px;
+}

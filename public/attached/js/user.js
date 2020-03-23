@@ -49,6 +49,7 @@ class class_company
     var method = 'POST';
     var body = JSON.stringify({ a: array_form[0].value, b: array_form[1].value, c: array_form[2].value, d: array_form[3].value });
     var funcion = function (data_obj) {
+      cls_company.render_company_saved(data_obj['data']['company_list']);
       cls_company.render_select_company(data_obj['data']['company_list']);
       cls_company.clear_form();
       cls_general_funct.shot_toast(data_obj['message']);
@@ -119,45 +120,6 @@ class class_company
     }
     cls_general_funct.async_laravel_request(url, method, funcion)
   }
-
-
-  // reorder_list(obj) {
-  //   var raw_ordered = []; var raw_returned = new Object;
-  //   for (var a in obj) { raw_ordered.push(obj[a] + '*-*' + a); }
-  //   raw_ordered.sort();
-  //   for (var i = 0; i < raw_ordered.length; i++) {
-  //     var splited = raw_ordered[i].split("*-*");
-  //     raw_returned["'" + splited[1] + "'"] = splited[0];
-  //   }
-  //   return raw_returned
-  // }
-  // filter_company_linkup(str, limit = 300) {
-  //   var haystack = array_companylist;
-  //   var needles = str.split(' ');
-  //   var raw_filtered = new Object;
-  //   var counter = 0;
-  //   for (var i in haystack) {
-  //     var ocurrencys = 0;
-  //     for (const a in needles) {
-  //       if (haystack[i].toLowerCase().indexOf(needles[a].toLowerCase()) > -1) { ocurrencys++ }
-  //     }
-  //     if (ocurrencys === needles.length && counter < limit) {
-  //       raw_filtered[i] = haystack[i];
-  //       counter++;
-  //     }
-  //   }
-  //   this.render_company_linkup(this.reorder_list(raw_filtered));
-  // }
-  // render_company_linkup(data_list) {
-  //   content = '';
-  //   for (const a in data_list) {
-  //     content += `
-  //     <button type="button" class="list-group-item list-group-item-action">${data_list[a]}</button>
-  //     `;
-  //   }
-  //   document.getElementById("container_data_filtered").innerHTML = content;
-  // }
-
 }
 // ##################    CLASS USER     #############
 class class_user

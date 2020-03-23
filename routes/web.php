@@ -27,6 +27,7 @@ Route::get('user/get_by_company/{company_id}', 'controller_user@get_user_by_comp
 
 Route::post('/report/{data}', 'controller_data@show_fromto')->middleware('checklogin');
 Route::post('/user_company/delete', 'controller_user_company@delete')->middleware('checklogin');
+Route::post('/data/ralenti', 'controller_data@store_ralenti')->middleware('checklogin');
 // Route::post('/register', 'controller_user@store_company')->middleware('checklogin');
 
 Route::delete('/data/{name}', 'controller_data@destroy')->middleware('checklogin');

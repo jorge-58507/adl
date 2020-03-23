@@ -65,19 +65,19 @@ constructor (vehicule_list)
     
   // }
 
-  new_report(data_list) {
-    var array_data = {};
+  new_report(data_list, base_url, array_total) {
+    // var array_data = {};
     var name = moment().format("DD-MM-YYYY");
-    var array_data = data_list['distance'];
+    // var array_data = data_list['distance'];
     var array_checked = ['LINE', 'BAR'];
     if (data_list['distance'].length === 1) {
       array_checked.push('PIE');
     }    
-    cls_report.report_ppt(name, data_list, array_checked);
+    cls_report.report_ppt(name, data_list, array_checked, base_url, array_total);
   }
 
 
-  report_ppt(name, data_list, array_checked) {
+  report_ppt(name, data_list, array_checked, base_url='',array_total) {
     var array_distance = data_list['distance'];
     var array_time = data_list['time'];
     var array_volume = data_list['volume'];
@@ -87,6 +87,10 @@ constructor (vehicule_list)
     var array_timeXvol = data_list['timexvolume'];
     var array_currencyXvol = data_list['currencyxvolume'];
 
+    // var total_distance = {};
+    // for (const a in array_distance) {
+    //   total_distance[array_distance[a]['name']] = 
+    // }
     // for (const a in array_data) {
       // if (array_data[a]['distance'] != null && array_data[a]['distance'].length > 0) {
       //   array_distance[a] = array_data[a]['distance'];
@@ -133,8 +137,10 @@ constructor (vehicule_list)
       objects: [
         { 'rect': { x: 0.0, y: 0.1, w: '100%', h: 0.5, fill: '7182d5' } },
         { 'text': { text: 'Reporte de Eficiencia', options: { x: 0.5, y: 0.1, w: 5.5, h: 0.5, bold: true, color: 'FFFFFF' } } },
-        { 'image': { x: 8.5, y: 0.15, w: 1.2, h: 0.4, path: '../../../../../attached/image/rect_long_logo.png' } },
-        { 'image': { x: 1.0, y: 0.0, w: 8.0, h: 8.0, path: '../../../../../attached/image/watermark_logo.png' } }
+        { 'image': { x: 8.5, y: 0.15, w: 1.2, h: 0.4, path: base_url+'attached/image/rect_long_logo.png' } },
+        { 'image': { x: 1.0, y: 0.0, w: 8.0, h: 8.0, path: base_url +'attached/image/watermark_logo.png' } }
+        // { 'image': { x: 8.5, y: 0.15, w: 1.2, h: 0.4, path: '../../../../../attached/image/rect_long_logo.png' } },
+        // { 'image': { x: 1.0, y: 0.0, w: 8.0, h: 8.0, path: '../../../../../attached/image/watermark_logo.png' } }
       ],
       // slideNumber: { x: 0.1, y: '95%' }
     });
@@ -145,7 +151,8 @@ constructor (vehicule_list)
         { 'rect': { x: 0.0, y: 0.0, w: '100%', h: 0.5, fill: 'FFFFFF' } },
         { 'text': { text: 'Reporte de Eficiencia', options: { x: 0.5, y: 1.5, w: 5.5, h: 0.5, bold: true, color: 'FFFFFF', fontSize: 28 } } },
         { 'text': { text: 'de Combustible', options: { x: 2.0, y: 2.0, w: 5.5, h: 0.5, bold: true, color: 'FFFFFF', fontSize: 28 } } },
-        { 'image': { x: 6.5, y: 2.0, w: 2.5, h: 2.5, path: '../../../../../attached/image/squared_logo.png' } },
+        { 'image': { x: 6.5, y: 2.0, w: 2.5, h: 2.5, path: base_url+'attached/image/squared_logo.png' } },
+        // { 'image': { x: 6.5, y: 2.0, w: 2.5, h: 2.5, path: '../../../../../attached/image/squared_logo.png' } },
         { 'rect': { x: 0.0, y: 4.0, w: '100%', h: 1.65, fill: 'FFFFFF' } }
       ],
     });
@@ -154,6 +161,8 @@ constructor (vehicule_list)
 
     //   ######################                  SLIDE DE BIENVENIDA AQUI
     var slide = pptx.addNewSlide('WELCOME_SLIDE');
+
+    cls_data_sample.generate_total_chart(pptx, array_total, 'Totales', base_url);
 
     var counter_distance = 0;
     for (const a in array_distance) { counter_distance++; }    
@@ -185,9 +194,9 @@ constructor (vehicule_list)
     
     pptx.save('ADL Reporte de Eficiencia ' + name);
 
-  }
+  } 
 
-  redirect_dashboard() {
+  redirect_dashboard(base) { 
     $('#modal_efficiency').modal('hide');
     var some_checked = false; var vehicule_checked = [];
     var valid = cls_general_funct.validatedate(document.getElementById('txt_efficiency_from'));
@@ -204,8 +213,8 @@ constructor (vehicule_list)
     var until = document.getElementById('txt_efficiency_until').value;
 
 
-    var url = `/report/dashboard/${from}/${until}/${vehicule_checked}/`;
-    window.location.href = url;
+    var url = `report/dashboard/${from}/${until}/${vehicule_checked}/`;
+    window.location.href = base+url;
     return false;
   }
 }

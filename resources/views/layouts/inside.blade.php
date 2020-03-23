@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="{{ URL::asset('attached/css/wrap.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('attached/css/index.css')}}">
+		<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css"/>
     <script src="https://kit.fontawesome.com/72f3daada8.js" crossorigin="anonymous"></script>
     
 </head>
@@ -52,9 +53,9 @@
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }}</a>
 								<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-									<a class="dropdown-item social" href="https://alldatalogistic.com/Multisense/"><i class="fas fa-video"></i></a>
-									<a class="dropdown-item social" href="https://twitter.com/alldatalogistic/"><i class="fab fa-twitter"></i></a>
-									<a class="dropdown-item social" href="https://instagram.com/alldatalogistic/"><i class="fab fa-instagram"></i></a>
+									<a class="dropdown-item social" target="_blank" href='https://www.tiktok.com/@alldatalogistic_1?lang=es'><i class="fas fa-video"></i></a>
+									<a class="dropdown-item social" target="_blank" href="https://twitter.com/alldatalogistic/"><i class="fab fa-twitter"></i></a>
+									<a class="dropdown-item social" target="_blank" href="https://instagram.com/alldatalogistic/"><i class="fab fa-instagram"></i></a>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" href="{{ URL::asset('/user/edit/edit')}}"><i class="fas fa-wrench"> </i> {{ __(' Opciones') }}</a>
 									<a class="dropdown-item" href="{{ route('logout') }}" 
@@ -84,11 +85,13 @@
     
       <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> --}}
+		<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="{{ URL::asset('attached/js/validCampoFranz.js')}}"></script>
-    <script type="text/javascript" src="{{ URL::asset('attached/js/adl.js')}}"></script>
+		<script type="text/javascript" src="{{ URL::asset('attached/js/adl.js')}}"></script>
     @yield('optional_javascript')
 </body>
 </html>

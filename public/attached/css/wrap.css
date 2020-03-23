@@ -1,3 +1,6 @@
+html {
+  scroll-behavior: smooth;
+}
 .bg_adl {
   background: #7182d5;
   color: #fff !important;
@@ -10,7 +13,6 @@
 }
 .main_bg_statistic {
   background-image: url("../../attached/image/statistics2.png");
-  /* height: 100vh; */
   background-repeat: repeat;
   background-size: 100%;
 }
@@ -64,6 +66,9 @@
 .h_40 {
   height: 40px;
 }
+.h_100 {
+  height: 100px;
+}
 .h_400 {
   height: 400px;
 }
@@ -79,6 +84,13 @@
 .h_100vh{
   height: 100vh;
 }
+.maxh_250{
+  max-height: 250px;
+}
+.maxh_400{
+  max-height: 400px;
+}
+
 
 html, body {height: 100%}
 .h_100p{
@@ -90,4 +102,10 @@ html, body {height: 100%}
 }
 .bg_disabled{
   background-color: #e9ecef;
+}
+.float_left{
+  float: left;
+}
+.float_right{
+  float: right;;
 }

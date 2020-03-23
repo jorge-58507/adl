@@ -101,7 +101,7 @@ $rs_vehicule = $compacted['vehicule_list'];
     }
   });
   $("#btn_efficiency_report").on('click', function(){
-    cls_report.redirect_dashboard();
+    cls_report.redirect_dashboard("{{ URL::asset('')}}");
   })
   </script>
 

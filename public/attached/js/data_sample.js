@@ -127,7 +127,7 @@ class data_sample {
   read_all_byvehicule(vehicule) {
     var url = `data\\${vehicule}`;
     var method = 'GET';
-    var funcion = function (data_obj) {
+    var funcion = function (data_obj) { 
       cls_data_sample.render_sample_table(data_obj['data_list']);
     }
     cls_general_funct.async_laravel_request(url, method, funcion)
@@ -141,7 +141,68 @@ class data_sample {
     }
     cls_general_funct.laravel_request(url, method, funcion, body);
   }
-                    // ##############################       GENERATE    CHART     ##############################
+  // ##############################       TOTAL    CHART     ##############################
+  generate_total_chart(pptx,array_total,title,base_url){
+
+    var total_distance = 0; 
+    var distance_piechart = [{name: 'Distancia', labels: [],values: []}];
+    for (const a in array_total['distance']) {
+      total_distance += array_total['distance'][a][1];
+      distance_piechart[0]['labels'].push(array_total['distance'][a][0])
+      distance_piechart[0]['values'].push(array_total['distance'][a][1])
+    }
+    var total_time = 0;
+    var time_piechart = [{ name: 'Tiempo', labels: [], values: [] }];
+    for (const a in array_total['time']) {
+      total_time += array_total['time'][a][1];
+      time_piechart[0]['labels'].push(array_total['time'][a][0])
+      time_piechart[0]['values'].push(array_total['time'][a][1])
+    }
+    var total_volume = 0;
+    var volume_piechart = [{ name: 'Surtido', labels: [], values: [] }];
+    for (const a in array_total['volume']) {
+      total_volume += array_total['volume'][a][1];
+      volume_piechart[0]['labels'].push(array_total['volume'][a][0])
+      volume_piechart[0]['values'].push(array_total['volume'][a][1])
+    }
+    var total_currency = 0;
+    var currency_piechart = [{ name: 'Dinero', labels: [], values: [] }];
+    for (const a in array_total['currency']) {
+      total_currency += array_total['currency'][a][1];
+      currency_piechart[0]['labels'].push(array_total['currency'][a][0])
+      currency_piechart[0]['values'].push(array_total['currency'][a][1])
+    }
+
+    var slide = pptx.addNewSlide('MASTER_SLIDE');
+    slide.addText(title, { x: 0.0, y: 0.7, bold: true, fontSize: 18, w: '100%', align: 'c' });    
+    
+    var distance_unit = eval('data_sample.prototype.unit.distance');
+    slide.addText('Distancia Total:', { x: 0.9, y: 1.1, bold: false, fontSize: 16, w: '100%' });
+    slide.addImage({ path: base_url + 'attached/image/distance.jpeg', x: 1, y: 1.4, w: 0.5, h: 0.5 });
+    slide.addText(`${Number(total_distance.toFixed(2))} ${distance_unit}`, { x: 1.5, y: 1.5, bold: false, fontSize: 14, w: '100%' });
+
+    var time_unit = eval('data_sample.prototype.unit.time');
+    slide.addText('Tiempo Total:', { x: 3.1, y: 1.1, bold: false, fontSize: 16, w: '100%' });
+    slide.addImage({ path: base_url + 'attached/image/time.jpeg', x: 3.2, y: 1.4, w: 0.5, h: 0.5 });
+    slide.addText(`${Number(total_time.toFixed(2))} ${time_unit}`, { x: 3.7, y: 1.5, bold: false, fontSize: 14, w: '100%' });
+
+    var volume_unit = eval('data_sample.prototype.unit.volume');
+    slide.addText('Surtido Total:', { x: 5.3, y: 1.1, bold: false, fontSize: 16, w: '100%' });
+    slide.addImage({ path: base_url + 'attached/image/volumen.jpeg', x: 5.4, y: 1.4, w: 0.5, h: 0.5 });
+    slide.addText(`${Number(total_volume.toFixed(2))} ${volume_unit}`, { x: 5.9, y: 1.5, bold: false, fontSize: 14, w: '100%' });
+
+    var currency_unit = eval('data_sample.prototype.unit.currency');
+    slide.addText('Dinero Total:', { x: 7.5, y: 1.1, bold: false, fontSize: 16, w: '100%' });
+    slide.addImage({ path: base_url + 'attached/image/currency.jpeg', x: 7.6, y: 1.4, w: 0.5, h: 0.5 });
+    slide.addText(`${Number(total_currency.toFixed(2))} ${currency_unit}`, { x: 8.1, y: 1.5, bold: false, fontSize: 14, w: '100%' });
+
+    slide.addChart(pptx.charts.PIE, distance_piechart,  { x: 0.5, y: 2.6, w: 2.8, h: 1.5, showLegend: true, legendPos: 'l', legendFontSize: 8, legendFontFace: 'Courier New' });
+    slide.addChart(pptx.charts.PIE, time_piechart,      { x: 3.1, y: 2.6, w: 2.8, h: 1.5, showLegend: true, legendPos: 'l', legendFontSize: 8, legendFontFace: 'Courier New' });
+    slide.addChart(pptx.charts.PIE, volume_piechart,    { x: 4.9, y: 3.6, w: 2.8, h: 1.5, showLegend: true, legendPos: 'l', legendFontSize: 8, legendFontFace: 'Courier New' });
+    slide.addChart(pptx.charts.PIE, currency_piechart,  { x: 7.4, y: 3.6, w: 2.8, h: 1.5, showLegend: true, legendPos: 'l', legendFontSize: 8, legendFontFace: 'Courier New' });
+
+  }
+  // ##############################       GENERATE    CHART     ##############################
   generate_chart(pptx, array_data, chart_checked, array_unit, title) {
     var gOptsTabOpts = { x: 0.4, y: 0.13, w: 12.5, colW: [9, 3.5] };
     var gOptsTextL = { color: '9F9F9F', margin: 3, border: [0, 0, { pt: '1', color: 'CFCFCF' }, 0] };
@@ -153,41 +214,7 @@ class data_sample {
 
     slide.addText(title, { x: 0.0, y: 0.7, bold: true, fontSize: 18, w: '100%', align: 'c' });
 
-    // var label = []; var value = [];
-    // for (const a in array_data) {
-    //   label.push(cls_general_funct.date_converter('ymd', 'dmy', a));
-    //   value.push(array_data[a]);
-    // }
-
-
-    // var dataChartAreaLine = [
-    //   {
-    //     name: 'Reporte de Eficiencia',
-    //     labels: label,        //        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    //     values: value         //        values: [1500, 4600, 5156, 3167, 8510, 8009, 6006, 7855, 12102, 12789, 10123, 15121]
-    //   }
-    //   //      ,
-    //   //      {
-    //   //        name: 'Projected Sales',
-    //   //        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    //   //        values: [1000, 2600, 3456, 4567, 5010, 6009, 7006, 8855, 9102, 10789, 11123, 12121]
-    //   //      }
-    // ];
-    // var dataChartAreaLine = [
-    //   {
-    //     name:'BK0128',
-    //     labels:[0,1,2,3,4],
-    //     values: ["123", "123", "200", "100", "120"]
-    //   },
-    //   {
-    //     name:'BK0129',
-    //     labels:[0,1,2,3,4],
-    //     values: [null, null, "120", "120","120"]
-    //   }
-    // ]
-
     var dataChart = array_data;
-
     var y_axis =  (chart_checked.length <= 2) ? 1.2 : 3.1;
     for (let a = 0; a < chart_checked.length; a++) {
       var chart = chart_checked[a];
@@ -198,7 +225,7 @@ class data_sample {
         case 'BAR':
           slide.addChart(pptx.charts.BAR, dataChart, { x: 5.0, y: 1.2, w: 5, h: 2.1 });
           break;
-        case 'PIE':
+        case 'PIE':          
           slide.addChart(pptx.charts.PIE, dataChart, { x: 5.0, y: y_axis, w: 5, h: 2.5, showLegend: true, legendPos: 'l', showValue: true, legendFontFace: 'Courier New' }    );
           break;
       } 
@@ -211,7 +238,6 @@ class data_sample {
         unit_of += '/' + eval('data_sample.prototype.unit.' + array_unit[a]);
       }
     }
-    // console.log(JSON.stringify(dataChart));
     var row_head = [{ text: 'FECHA', options: { valign: 'm', align: 'c', fontFace: 'Arial', bold: true, fill: '7182d5', color: 'FFFFFF', fontSize: '12' }}]
     for (const i in dataChart) {
       row_head.push(
@@ -265,7 +291,7 @@ class data_sample {
       rows.push(row_body[x])
     }
 
-    var tabOpts = { x: 1.5, y: 3.5, w: 2.5, h: 1.5, fill: 'FFFFFF', fontSize: 8, color: '000000' };
+    var tabOpts = { x: 1.5, y: 3.5, w: 3, h: 1.5, fill: 'FFFFFF', fontSize: 8, color: '000000' };
     slide.addTable(rows, tabOpts);
 
 

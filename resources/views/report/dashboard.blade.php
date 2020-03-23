@@ -8,14 +8,15 @@
 <?php
 $date_today = date('d-m-Y'); 
 $rs_vehicule = $compacted['vehicule_list'];
+$array_slug_licenseplate = [];
 $array_data = $compacted['data'];
 $qty_data = 0;  $ttl_distance = 0;
 $alert_warning = '';
 $array_vehicule = []; //   ARREGLOS DE VEHICULOS
 foreach ($array_data as $slug => $data) { 
-  ${"obj_distance_$slug"} = []; ${"obj_time_$slug"} = []; ${"obj_volume_$slug"} = []; ${"obj_currency_$slug"} = []; ${"obj_distancexvolume_$slug"} = []; ${"obj_timexvolume_$slug"} = []; ${"obj_currencyxvolume_$slug"} = [];
+  ${"obj_distance_$slug"} = []; ${"obj_time_$slug"} = []; ${"obj_volume_$slug"} = []; ${"obj_currency_$slug"} = []; ${"obj_ralenti_$slug"} = []; ${"obj_distancexvolume_$slug"} = []; ${"obj_timexvolume_$slug"} = []; ${"obj_currencyxvolume_$slug"} = [];
   $qty_data++; 
-  $distance_sum = 0;  $time_sum = 0; $volume_sum = 0; $currency_sum = 0;
+  $distance_sum = 0;  $time_sum = 0; $volume_sum = 0; $currency_sum = 0; $ralenti_sum = 0;
   $data_unit = '';
 
   foreach ($data['datasample'] as $key => $array_data) {
@@ -24,25 +25,30 @@ foreach ($array_data as $slug => $data) {
     }
     if ( $array_data['tx_data_unit'] === $data_unit) {
       $sample = json_decode($array_data['tx_data_sample'],true);
-      if ($sample['distance'] != null) {
+      if (!empty($sample['distance'])) {
         ${"obj_distance_$slug"}[$array_data['tx_data_date']] = '';
         ${"obj_distance_$slug"}[$array_data['tx_data_date']] = $sample['distance'];
         $distance_sum += $sample['distance'];
       }
-      if ($sample['time'] != null) {
+      if (!empty($sample['time'])) {
         ${"obj_time_$slug"}[$array_data['tx_data_date']] = '';
         ${"obj_time_$slug"}[$array_data['tx_data_date']] = $sample['time'];
         $time_sum += $sample['time'];
       }
-      if ($sample['volume'] != null) {
+      if (!empty($sample['volume'])) {
         ${"obj_volume_$slug"}[$array_data['tx_data_date']] = '';
         ${"obj_volume_$slug"}[$array_data['tx_data_date']] = $sample['volume'];
         $volume_sum += $sample['volume'];
       }
-      if ($sample['currency'] != null) {
+      if (!empty($sample['currency'])) {
         ${"obj_currency_$slug"}[$array_data['tx_data_date']] = '';
         ${"obj_currency_$slug"}[$array_data['tx_data_date']] = $sample['currency'];
         $currency_sum += $sample['currency'];
+      }
+      if (!empty($sample['ralenti'])) {
+        ${"obj_ralenti_$slug"}[$array_data['tx_data_date']] = '';
+        ${"obj_ralenti_$slug"}[$array_data['tx_data_date']] = round($sample['ralenti']/3600,2);
+        $ralenti_sum += $sample['ralenti'];
       }
     }else{
       $alert_warning = 'Hay unidades que no coinciden.';
@@ -53,6 +59,7 @@ foreach ($array_data as $slug => $data) {
   $array_vehicule[$slug]['total_time'] = $time_sum;
   $array_vehicule[$slug]['total_volume'] = $volume_sum;
   $array_vehicule[$slug]['total_currency'] = $currency_sum;
+  $array_vehicule[$slug]['total_ralenti'] = $ralenti_sum;
   if (count(${"obj_distance_$slug"}) > 0) {
     foreach (${"obj_distance_$slug"} as $fecha => $distance) {
       if (!empty(${"obj_volume_$slug"}[$fecha])) {
@@ -77,12 +84,13 @@ foreach ($array_data as $slug => $data) {
       }
     }
   }
-  $array_distance = []; $array_time = []; $array_volume = []; $array_currency = []; $array_distancexvolume = [];  $array_timexvolume = []; $array_currencyxvolume = [];
-  $distance_axis = [];  $time_axis = [];  $volume_axis = [];  $currency_axis = [];  $distancexvolume_axis = [];   $timexvolume_axis = [];  $currencyxvolume_axis = [];
+  $array_distance = []; $array_time = []; $array_volume = []; $array_currency = []; $array_ralenti = []; $array_distancexvolume = [];  $array_timexvolume = []; $array_currencyxvolume = [];
+  $distance_axis = [];  $time_axis = [];  $volume_axis = [];  $currency_axis = [];  $ralenti_axis = [];  $distancexvolume_axis = [];   $timexvolume_axis = [];  $currencyxvolume_axis = [];
   foreach (${"obj_distance_$slug"} as $date => $distance) { $array_distance[$date]=$distance; array_push($distance_axis,$date); }
   foreach (${"obj_time_$slug"} as $date => $time)         { $array_time[$date]=$time;         array_push($time_axis,$date);     }
   foreach (${"obj_volume_$slug"} as $date => $volume)     { $array_volume[$date]=$volume;     array_push($volume_axis,$date);   }
   foreach (${"obj_currency_$slug"} as $date => $currency) { $array_currency[$date]=$currency; array_push($currency_axis,$date); }
+  foreach (${"obj_ralenti_$slug"} as $date => $ralenti)   { $array_ralenti[$date]=$ralenti;   array_push($ralenti_axis,$date);  }
   foreach (${"obj_distancexvolume_$slug"} as $date => $distancexvolume) { $array_distancexvolume[$date]=$distancexvolume; array_push($distancexvolume_axis,$date);}
   foreach (${"obj_timexvolume_$slug"} as $date => $timexvolume) {         $array_timexvolume[$date]=$timexvolume;         array_push($timexvolume_axis,$date);}
   foreach (${"obj_currencyxvolume_$slug"} as $date => $currencyxvolume) { $array_currencyxvolume[$date]=$currencyxvolume; array_push($currencyxvolume_axis,$date);}
@@ -94,6 +102,8 @@ foreach ($array_data as $slug => $data) {
   $array_vehicule[$slug]['chartdata']['volume']['axis'] = $volume_axis;
   $array_vehicule[$slug]['chartdata']['currency']['data'] = $array_currency;
   $array_vehicule[$slug]['chartdata']['currency']['axis'] = $currency_axis;
+  $array_vehicule[$slug]['chartdata']['ralenti']['data'] = $array_ralenti;
+  $array_vehicule[$slug]['chartdata']['ralenti']['axis'] = $ralenti_axis;
   
   $array_vehicule[$slug]['chartdata']['distancexvolume']['data'] = $array_distancexvolume;
   $array_vehicule[$slug]['chartdata']['distancexvolume']['axis'] = $distancexvolume_axis;
@@ -105,7 +115,7 @@ foreach ($array_data as $slug => $data) {
 };
 $distance_piedata = []; $time_piedata = []; $volume_piedata = []; $currency_piedata = [];
 $distance_chartdata=[]; $time_chartdata=[]; $volume_chartdata=[]; $currency_chartdata=[];
-$distance_xaxis=["x"]; $time_xaxis=["x"]; $volume_xaxis=['x']; $currency_xaxis=['x'];
+$distance_xaxis=["x"]; $time_xaxis=["x"]; $volume_xaxis=['x']; $currency_xaxis=['x']; $ralenti_xaxis=['x'];
 foreach ($array_vehicule as $slug => $vehicule_data) {
   $distance_piedata[] = [$vehicule_data['name'],$vehicule_data['total_distance']];
   $time_piedata[] = [$vehicule_data['name'],$vehicule_data['total_time']];
@@ -115,6 +125,7 @@ foreach ($array_vehicule as $slug => $vehicule_data) {
   $time_xaxis = array_unique(array_merge($time_xaxis,$vehicule_data['chartdata']['time']['axis']));
   $volume_xaxis = array_unique(array_merge($volume_xaxis,$vehicule_data['chartdata']['volume']['axis']));
   $currency_xaxis = array_unique(array_merge($currency_xaxis,$vehicule_data['chartdata']['currency']['axis']));
+  $ralenti_xaxis = array_unique(array_merge($ralenti_xaxis,$vehicule_data['chartdata']['ralenti']['axis']));
   if (!empty($vehicule_data['total_volume'])) {
     if (!empty($vehicule_data['total_distance'])) {
       $distancexvolume_piedata = [$vehicule_data['name'],($vehicule_data['total_distance']/$vehicule_data['total_volume'])];
@@ -158,6 +169,15 @@ foreach ($array_vehicule as $slug => $vehicule_data) {
     }
   }
   $currency_chartdata[] = array_merge([$vehicule_data['name']],$currency_predata);
+  $ralenti_predata=[]; //  #################  ARRAY PARA RALENTI
+  for ($i=1; $i < count($ralenti_xaxis); $i++) { 
+    if (!empty($vehicule_data['chartdata']['ralenti']['data'][$ralenti_xaxis[$i]])) {
+      $ralenti_predata[] = $vehicule_data['chartdata']['ralenti']['data'][$ralenti_xaxis[$i]];
+    }else{
+      $ralenti_predata[] = null;
+    }
+  }
+  $ralenti_chartdata[] = array_merge([$vehicule_data['name']],$ralenti_predata);
 }
 $distancexvolume_chartdata=[];  $timexvolume_chartdata=[];  $currencyxvolume_chartdata=[];
 $distancexvolume_array=[];      $timexvolume_array=[];      $currencyxvolume_array=[];
@@ -317,8 +337,8 @@ foreach ($currencyxvolume_chartdata as $a => $array_data) {
   $raw_array['labels'] = $volume_x;
   $currencyxvolume_pptdata[] = $raw_array;
 }
-
 $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volume_pptdata, 'currency'=>$currency_pptdata,'distancexvolume'=>$distancexvolume_pptdata,'timexvolume'=>$timexvolume_pptdata,'currencyxvolume'=>$currencyxvolume_pptdata];
+$url_asset = URL::asset('');
 ?>    
 <div id="toast_container" style="position: fixed; top: 130px; right: 100px; z-index: 10"></div>
   <!-- Modal -->
@@ -370,7 +390,7 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group mr-2">
           <button type="button"  data-toggle="modal" data-target="#modal_efficiency" class="btn btn-sm btn-outline-secondary">Modificar Opciones</button>
-          <button type="button" onclick="cls_report.new_report({{ json_encode($ppt_data) }})" class="btn btn-sm btn-outline-secondary">Exportar</button>
+          <button type="button" onclick="cls_report.new_report({{ json_encode($ppt_data) }},'{{ $url_asset}}',array_total )" class="btn btn-sm btn-outline-secondary">Exportar</button>
         </div>
       </div>
     </div>
@@ -533,9 +553,40 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
         </div>
       <?php } ?>
     </div>
+    <div class="pt-3">
+      <span class="font-weight-bold">Ralenti
+        <button type="button" class="btn btn-default" onclick="chart_ralenti.transform('line');"><i class="fas fa-chart-line" ></i></button>
+        <button type="button" class="btn btn-default" onclick="chart_ralenti.transform('area-spline');"><i class="fas fa-chart-area" ></i></button>
+        <button type="button" class="btn btn-default" onclick="chart_ralenti.transform('bar');"><i class="fas fa-chart-bar" ></i></button>
+      </span>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 p-0" id="ralenti_chart"></div>
+    </div>
+    <div class="row maxh_250 overflow_auto pb-2 border-bottom">
+      <?php  foreach ($array_vehicule as $slug => $vehicule_data) {  ?>
+        <div class="col-sm-2 p-2 border-right" id="table_data_top">
+          <span class="font-weight-bold">{{ $vehicule_data['name'] }}</span>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">{{$unit['time']}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($vehicule_data['chartdata']['ralenti']['data'] as $date => $value) {
+                echo "<tr><td>".date('d-m-Y',strtotime($date))."</td><td class='text-center'>{$value}</td></tr>";
+              } ?>
+            <tbody>
+          </table>
+        </div>
+      <?php } ?>
+    </div>
+
     <h4 id="list-item-3">Gr&aacute;ficas Combinadas</h4>
     <div class="pt-3">
-      <span class="font-weight-bold">Eficiencia de Distancia sobre Surtido
+      <span class="font-weight-bold">Eficiencia de Distancia sobre Surtido ({{$unit['distance']}}/{{$unit['volume']}})
         <button type="button" class="btn btn-default" onclick="chart_distancexvolume.transform('line');"><i class="fas fa-chart-line" ></i></button>
         <button type="button" class="btn btn-default" onclick="chart_distancexvolume.transform('area-spline');"><i class="fas fa-chart-area" ></i></button>
         <button type="button" class="btn btn-default" onclick="chart_distancexvolume.transform('bar');"><i class="fas fa-chart-bar" ></i></button>
@@ -547,7 +598,7 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
     <div class="row pb-2 border-bottom">
       <?php   foreach ($distancexvolume_array as $slug => $distancexvolume) {  ?>
         <div class="col-sm-2 p-2 border-right" id="table_data_top">
-          <span class="font-weight-bold">{{ $vehicule_data['name'] }}</span>
+          <span class="font-weight-bold">{{ $array_vehicule[$slug]['name'] }}</span>
           <table class="table table-sm">
             <thead>
               <tr>
@@ -565,7 +616,7 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
       <?php } ?>
     </div>
     <div class="pt-3">
-      <span class="font-weight-bold">Eficiencia de Tiempo sobre Surtido
+      <span class="font-weight-bold">Eficiencia de Tiempo sobre Surtido ({{$unit['time']}}/{{$unit['volume']}})
         <button type="button" class="btn btn-default" onclick="chart_timexvolume.transform('line');"><i class="fas fa-chart-line" ></i></button>
         <button type="button" class="btn btn-default" onclick="chart_timexvolume.transform('area-spline');"><i class="fas fa-chart-area" ></i></button>
         <button type="button" class="btn btn-default" onclick="chart_timexvolume.transform('bar');"><i class="fas fa-chart-bar" ></i></button>
@@ -575,9 +626,9 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
       <div class="col-sm-12 p-0" id="timexvolume_chart"></div>
     </div>
     <div class="row pb-2 border-bottom">
-      <?php   foreach ($timexvolume_array as $slug => $timexvolume) {  ?>
+      <?php foreach ($timexvolume_array as $slug => $timexvolume) {  ?>
         <div class="col-sm-2 p-2 border-right" id="table_data_top">
-          <span class="font-weight-bold">{{ $vehicule_data['name'] }}</span>
+          <span class="font-weight-bold">{{ $array_vehicule[$slug]['name'] }}</span>
           <table class="table table-sm">
             <thead>
               <tr>
@@ -595,7 +646,7 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
       <?php } ?>
     </div>
     <div class="pt-3">
-      <span class="font-weight-bold">Eficiencia de Dinero sobre Surtido
+      <span class="font-weight-bold">Eficiencia de Dinero sobre Surtido ({{$unit['currency']}}/{{$unit['volume']}})
         <button type="button" class="btn btn-default" onclick="chart_currencyxvolume.transform('line');"><i class="fas fa-chart-line" ></i></button>
         <button type="button" class="btn btn-default" onclick="chart_currencyxvolume.transform('area-spline');"><i class="fas fa-chart-area" ></i></button>
         <button type="button" class="btn btn-default" onclick="chart_currencyxvolume.transform('bar');"><i class="fas fa-chart-bar" ></i></button>
@@ -607,7 +658,7 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
     <div class="row pb-2 border-bottom">
       <?php   foreach ($currencyxvolume_array as $slug => $currencyxvolume) {  ?>
         <div class="col-sm-2 p-2 border-right" id="table_data_top">
-          <span class="font-weight-bold">{{ $vehicule_data['name'] }}</span>
+          <span class="font-weight-bold">{{ $array_vehicule[$slug]['name'] }}</span>
           <table class="table table-sm">
             <thead>
               <tr>
@@ -697,6 +748,8 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
       type : 'pie',
     }
   });
+  var array_total = {distance: distance_piedata, time: time_piedata, volume: volume_piedata, currency: currency_piedata};
+  
   var distance_chartdata = <?php echo json_encode($distance_chartdata); ?>;
   var group_distance = [];
   for (const a in distance_chartdata) { group_distance.push(distance_chartdata[a][0]);  }
@@ -760,6 +813,22 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
     tooltip: { show: false },
   });
 
+  var ralenti_chartdata = <?php echo json_encode($ralenti_chartdata); ?>;
+  var obj_ralenti_xaxis = <?php unset($ralenti_xaxis[0]); echo json_encode($ralenti_xaxis); ?>;
+  var ralenti_xaxis = [];
+  for (const a in obj_ralenti_xaxis) { ralenti_xaxis.push(cls_general_funct.date_converter('ymd','dmy',obj_ralenti_xaxis[a])); }
+  var chart_ralenti = c3.generate({ bindto: '#ralenti_chart',
+    data: { columns: ralenti_chartdata,  type: 'bar', groups: [ group_distance ],  labels: true, },
+    axis: {
+        x: {
+            type: 'category',
+            categories: ralenti_xaxis
+        }
+    },
+    bar: {  width: {  ratio: 0.8  } },
+    tooltip: { show: false },
+  });
+
   var distancexvolume_chartdata = <?php echo json_encode($distancexvolume_chartdata); ?>;
   var obj_volume_xaxis = <?php unset($volume_xaxis[0]); echo json_encode($volume_xaxis); ?>;
   var volume_xaxis = [];
@@ -797,7 +866,7 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
   var chart_currencyxvolume = c3.generate({ bindto: '#currencyxvolume_chart',
     data: { columns: currencyxvolume_chartdata,  type: 'bar', groups: [ group_distance ],  labels: true, },
     axis: {
-        x: {
+        x: { 
             type: 'category',
             categories: volume_xaxis
         }
@@ -807,9 +876,8 @@ $ppt_data=['distance'=>$distance_pptdata,'time'=>$time_pptdata, 'volume'=>$volum
   });
 
   $("#btn_efficiency_report").on('click', function(){
-    cls_report.redirect_dashboard();
+    cls_report.redirect_dashboard("{{$url_asset}}" );
   })
-
   </script>
 @endsection
 

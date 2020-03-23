@@ -9,52 +9,45 @@ $rs_company = $compacted['company_list'];
 ?>    
 <div class="container">
 	<div id="toast_container" style="position: fixed; top: 130px; right: 100px; z-index: 10">  <!-- TOAST MESSAGE CONTAINER --></div>
-	<!-- Modal -->
-	<div class="modal fade" id="modal_new_vehicule" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	{{-- MODAL UPLOAD FILE --}}
+	<div class="modal fade" id="modal_uploadfile" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLongTitle">Agregar Veh&iacute;culo</h5>
+					<h5 class="modal-title" id="exampleModalLongTitle">Subir Archivo</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
 					<div class="row">
-						<div class="col-sm-12 col-md-6">
-							<label for="txt_licenseplate">Matricula Vehicular</label>
-							<input type="text" id="txt_vehicule_licenseplate" class="form-control" placeholder="" value="">
-						</div>
-						<div class="col-sm-12 col-md-6">
-							<label for="txt_licenseplate">Compa&ntilde;&iacute;a</label>
-							<select name="sel_company" id="sel_company" class="form-control">
-								<?php foreach ($rs_company as $key => $company) {	?>
-									<option value="{{$company['ai_company_id']}}">{{$company['tx_company_description']}}</option>
-								<?php	}	?>
-							</select>
+						<div class="col-sm 12">
+							<div class="custom-file p-3">
+								<label for="upload_file" id="lbl_fileupload" class="custom-file-label">Reporte de Excel</label>
+								<input type="file" id="fileUpload" class="custom-file-input" />
+							</div>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-sm-12 col-md-6">
-							<label for="txt_brand">Marca</label>
-							<input type="text" id="txt_vehicule_brand" class="form-control" placeholder="" value="">
-						</div>
-						<div class="col-sm-12 col-md-6">
-							<label for="txt_model">Modelo</label>
-							<input type="text" id="txt_vehicule_model" class="form-control" placeholder="" value="">
+						<div class="col-sm-12 p-3">
+							<select name="sel_sourcefile" id="sel_sourcefile" class="form-control">
+								<option value="delta">Informe Delta</option>
+								<option value="ralenti" selected>Informe Ralenti</option>
+							</select>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-					<button type="button" class="btn btn-primary" id="btn_save_vehicule"><i class="fa fa-save"></i> Guardar</button>
+					<button type="button" class="btn btn-primary" onclick="cls_vehicule.UploadProcess()"><i class="fa fa-save"></i> Subir</button>
 				</div>
 			</div>
 		</div>
 	</div>
+
 	<div class="border rounded">
 		<form action="#" method="post" id="form_new_data">
-			<h3>Registro</h3>
+			<h3>Ingreso de Informaci&oacute;n</h3>
 			<div class="row">
 				<div class="col-sm d-none d-md-block"></div>
 				<div class="col-sm d-none d-lg-block"></div>
@@ -73,9 +66,6 @@ $rs_company = $compacted['company_list'];
 							<option value="{{ $item['tx_vehicule_slug'] }}">{{ $item['tx_vehicule_licenseplate'] }}</option>
 							@endforeach
 						</select>
-					</div>
-					<div class="col-sm-2 col-md-2 col-lg-1 padding_btn_nolabel">
-						<button type="button" class="btn btn-success" id="btn_add_vehicule" data-toggle="modal" data-target="#modal_new_vehicule"><i class="fa fa-plus"></i></button>
 					</div>
 				</div>
 				<div class="alert alert-info my-5" role="alert">
@@ -118,13 +108,19 @@ $rs_company = $compacted['company_list'];
 				</div> 
 			</div>
 
-			<div style="overflow:auto;">
-				<div style="float:right;">
+			<div class="d-flex flex-row-reverse h_100">
+				<div class="col-sm-12 col-md-7 text-right">
+					@if ( auth()->user()->checkRole('admin'))
+						<button type="button" id="btn_uploadfile" class="btn btn-dark" data-toggle="modal" data-target="#modal_uploadfile">Subir Archivo</button>&nbsp;&nbsp;&nbsp;&nbsp;
+					@endif
 					<button type="button" id="prevBtn" class="btn btn-secondary" onclick="nextPrev(-1)">Volver</button>
 					<button type="button" id="nextBtn" class="btn btn-primary" onclick="nextPrev(1)">Siguiente</button>
 				</div>
+				<div id="container_uploadfile" class="col-sm-12 col-md-5 h_100 d-none">
+					<div id="upload_file">Arrastre los archivos aqui.</div>
+					<output id="list"></output>
+				</div>
 			</div>
-
 	<!-- Circles which indicates the steps of the form: -->
 			<div style="text-align:center;margin-top:40px;">
 				<span class="step"></span>
@@ -171,6 +167,10 @@ $rs_company = $compacted['company_list'];
 	<script type="text/javascript" src="{{ URL::asset('attached/js/multistep_form.js')}}"></script>
 	<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@2.5.0/libs/jszip.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@2.5.0/dist/pptxgen.min.js"></script>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+
 	<script type="text/javascript">
 		const cls_general_funct = new general_funct;
 		const cls_data_sample = new data_sample (<?php echo json_encode($array_unit); ?>);
@@ -179,19 +179,9 @@ $rs_company = $compacted['company_list'];
 		$( function(){
 			$("#txt_date").datepicker({
 				changeMonth: true,
-				changeYear: true,
+				changeYear: true, 
 				dateFormat: 'dd-mm-yy'
 			});
-		});
-		$("#btn_save_vehicule").on("click", function(){
-			var licenseplate = document.getElementById('txt_vehicule_licenseplate').value;
-			var company = document.getElementById('sel_company').value;
-			var brand = document.getElementById('txt_vehicule_brand').value;
-			var model = document.getElementById('txt_vehicule_model').value;
-			cls_vehicule.save_vehicule('select','container_vehicule',licenseplate,brand,model,company);
-			cls_general_funct.set_empty(document.getElementById('txt_vehicule_licenseplate'));
-			cls_general_funct.set_empty(document.getElementById('txt_vehicule_brand'));
-			cls_general_funct.set_empty(document.getElementById('txt_vehicule_model'));
 		});
 		$("#btn_submit_form").on("click", function(){
 			cls_data_sample.save_data();
@@ -203,6 +193,15 @@ $rs_company = $compacted['company_list'];
 			var option = {"delay":2000};
 			$('.toast').toast(option);
 		});
+		tippy('#btn_add_vehicule', {
+			content: 'Agregar Vehículo'
+		});
 		$("#txt_distance,#txt_time,#txt_volume,#txt_currency").validCampoFranz("0123456789.");
+		$("#fileUpload").on("change", function(){
+			var label = (this.value).split('\\');			
+			$("#lbl_fileupload").html(label[2]);
+		})
+
+
 	</script>
 @endsection

@@ -95,7 +95,7 @@ class controller_report extends Controller
 
         $rs_vehicule = $model_vehicule->where('tx_vehicule_slug',$vehicule_slug)->get();
         $rs_data = $model_data->where('data_ai_vehicule_id',$vehicule_slug)->where('tx_data_date','>=',$from)->where('tx_data_date','<=',$to)
-			->select('adl_datas.tx_data_date','adl_datas.tx_data_sample','adl_datas.tx_data_slug','adl_datas.tx_data_unit')->get();
+			->select('adl_datas.tx_data_date','adl_datas.tx_data_sample','adl_datas.tx_data_slug','adl_datas.tx_data_unit')->orderby('adl_datas.tx_data_date','ASC')->get();
         $raw_datalist = ['datasample'=>$rs_data, 'vehicule'=>$rs_vehicule[0]['tx_vehicule_licenseplate']];
         return $raw_datalist;
     }
