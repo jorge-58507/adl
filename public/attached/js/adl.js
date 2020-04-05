@@ -74,7 +74,7 @@ class general_funct {
     }
   } 
   is_empty_var(string) {
-    if (string.length === 0 || /^\s+$/.test(string)) {
+    if (string === null || string.length === 0 || /^\s+$/.test(string)) {
       return 0;  //Vacio
     } else {
       return 1;  //Lleno
@@ -129,11 +129,11 @@ class general_funct {
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="toast-body overflow_auto h_400" id="toast_message_body bg-danger">
+        <div class="toast-body overflow_auto maxh_400" id="toast_message_body bg-danger">
           ${message}
         </div>
       </div>
-    `;
+    `; 
     var option = { "delay": 3000 };
     for (const a in opt) {
       option[a] = opt[a];

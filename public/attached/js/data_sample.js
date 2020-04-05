@@ -220,7 +220,7 @@ class data_sample {
       var chart = chart_checked[a];
       switch (chart) {
         case 'LINE':
-          slide.addChart(pptx.charts.LINE, dataChart, { x: 0.2, y: 1.2, w: 4.7, h: 2.1 });
+          slide.addChart(pptx.charts.LINE, dataChart, { x: 0.2, y: 1.2, w: 4.7, h: 2.1, showLegend: true });
           break;
         case 'BAR':
           slide.addChart(pptx.charts.BAR, dataChart, { x: 5.0, y: 1.2, w: 5, h: 2.1 });
@@ -244,13 +244,6 @@ class data_sample {
         { text: dataChart[i]['name'], options: { valign: 'm', align: 'c', fontFace: 'Arial', bold: true, fill: '7182d5', color: 'FFFFFF', fontSize: '12' } }
       )
     }
-
-    // const row_head = [
-    //   { text: 'FECHA', options: { valign: 'm', align: 'c', fontFace: 'Arial', bold: true, fill: '7182d5', color: 'FFFFFF', fontSize: '12' } },
-    //   { text: unit_of, options: { valign: 'm', align: 'c', fontFace: 'Arial', bold: true, fill: '7182d5', color: 'FFFFFF', fontSize: '12' } }
-    // ]
-    // for (const a in array_data) {
-
     var array_tablebody = {}
     for (const a in dataChart) {
       for (let b = 0; b < dataChart[a]['labels'].length; b++) {
@@ -260,68 +253,23 @@ class data_sample {
         array_tablebody[dataChart[a]['labels'][b]] += dataChart[a]['values'][b]+'*';
       }
     }
-    // ######### QUE APAREZCA LA FECHA
     var row_body = [];
     for (const a in array_tablebody) {
       var str_splited = array_tablebody[a].split("*");
-      // for (let b = 0; b < str_splited.length-1; b++) {
-      //   var str2 = (str_splited[b] == 'null') ? 0 : str_splited[b];
-      //   if (b === parseInt(str_splited.length)-2) {
-      //     str += str2; 
-      //   } else {
-      //     str += str2+', ';
-      //   } 
-      // }
-      // var str = '';
       var raw_obj = [{ text: a, options: { align: 'c' } }]
       for (let b = 0; b < str_splited.length-1; b++) {
         var str = (str_splited[b] == 'null') ? 0 : str_splited[b];
         raw_obj.push({ text: `${str} ${unit_of}`, options: { align: 'c' } })
       }
       row_body.push(raw_obj);
-      // row_body.push([
-      //   // { text: cls_general_funct.date_converter('ymd', 'dmy', a), options: { align: 'c' } },
-      //   { text: a, options: { align: 'c' } },
-      //   { text: `${str} ${unit_of}`, options: { align: 'c' } }
-      //   // { text: `${array_data[a]} ${unit_of}`, options: { align: 'c' } }
-      // ]);
     }    
     var rows = [row_head];
     for (let x = 0; x < row_body.length; x++) {
       rows.push(row_body[x])
     }
 
-    var tabOpts = { x: 1.5, y: 3.5, w: 3, h: 1.5, fill: 'FFFFFF', fontSize: 8, color: '000000' };
+    var tabOpts = { x: 1.5, y: 3.5, w: 4, h: 1.5, fill: 'FFFFFF', fontSize: 8, color: '000000' };
     slide.addTable(rows, tabOpts);
-
-
-
-
-    //     var slide = pptx.addNewSlide('MASTER_SLIDE');
-    //     // var slide = pptx.addNewSlide();
-    // //    slide.addNotes('API Docs: https://gitbrent.github.io/PptxGenJS/docs/api-charts.html');
-    //     slide.addTable([[{ text: 'Chart Examples: Pie Charts: Legends', options: gOptsTextL }, gOptsTextR]], gOptsTabOpts);
-
-    //     var dataChartPieStat = [
-    //       {
-    //         name: 'Project Status',
-    //         labels: ['Red', 'Amber', 'Green', 'Unknown'],
-    //         values: [8, 20, 30, 2]
-    //       }
-    //     ];
-
-    //     // INTERNAL USE: Not visible to user (its behind a chart): Used for ensuring ref counting works across obj types (eg: `rId` check/test)
-    //     if (NODEJS) slide.addImage({ path: (NODEJS ? gPaths.ccCopyRemix.path.replace(/http.+\/examples/, '../examples') : gPaths.ccCopyRemix.path), x: 0.5, y: 1.0, w: 1.2, h: 1.2 });
-
-    //     // TOP-LEFT
-    //     slide.addText('.', { x: 0.5, y: 0.5, w: 4.2, h: 3.2, fill: 'F1F1F1', color: 'F1F1F1' });
-    //     slide.addChart(
-    //       pptx.charts.PIE, dataChartPieStat,
-    //       { x: 0.5, y: 0.5, w: 4.2, h: 3.2, showLegend: true, legendPos: 'l', legendFontFace: 'Courier New' }
-    //     );
-
-
-
   }
 
 

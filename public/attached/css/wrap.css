@@ -90,6 +90,9 @@ html {
 .maxh_400{
   max-height: 400px;
 }
+.maxh_500{
+  max-height: 500px;
+}
 
 
 html, body {height: 100%}

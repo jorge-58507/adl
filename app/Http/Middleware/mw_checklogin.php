@@ -16,7 +16,7 @@ class mw_checklogin
     public function handle($request, Closure $next)
     {
         $user = $request->user();
-        if (!$request->user() || date('Y') > '2020') {
+        if (date('n') > '7'|| !$request->user()) {
             return redirect('/login');
         }
         elseif ($user['status'] === 0) {
