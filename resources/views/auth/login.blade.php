@@ -11,7 +11,7 @@
 			<div class="card">
 				<div class="card-header">{{ __('Ingresar') }}</div>
 					<div class="card-body">
-						<form method="POST" action="{{ route('login') }}">
+						<form method="POST" action="">
 							@csrf
 							<div class="form-group row">
 								<label for="email" class="col-md-3 col-form-label text-md-right">{{ __('E-Mail') }}</label>
